@@ -23,9 +23,9 @@ namespace ALPHA_QUOTE
 
         [Function("DailyAlphaQuote")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req)
+            [TimerTrigger("* */2 * * * *")] TimerInfo myTimer)
         {
-            _logger.LogInformation($"C# Http trigger function executed at: {DateTime.Now}");
+            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             
             var petrobras = new { symbol = "PETR4.SA", name = "Petrobrás S.A." };
             var url = $"{alphaUrl}?function={daily_function}&symbol={petrobras.symbol}&apikey={alphaApiKey}";
