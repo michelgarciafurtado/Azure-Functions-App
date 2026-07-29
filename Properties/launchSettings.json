@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ALPHA_QUOTE": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7165",
+      "launchBrowser": false
+    }
+  }
+}
