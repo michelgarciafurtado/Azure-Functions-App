@@ -10,7 +10,8 @@ enquanto a outra branch temos uma Timer Function que chama a API da Apha a cada 
   * **Branch Secundária**: Desenvolvimento isolado de tarefas agendadas e tratamento de requisições parametrizadas.
   * **Branch Master**: Centralização do código estável e consolidação da integração principal entre as APIs.
 * **Ferramentas de Desenvolvimento Local**: Configurar e utilizar o **Azurite** (emulador de Storage) e o **Azure Functions Core Tools** para testes 100% offline.
-### Instalação ###
+
+### Instalação e Requisitos ###
 ```bash
 # Instala o runtime do Azure Functions localmente
 npm i -g azure-functions-core-tools@4
@@ -18,6 +19,21 @@ npm i -g azure-functions-core-tools@4
 # Instala o emulador de armazenamento do Azure
 npm i -g azurite
 ```
+* Criar conta na AlphaVantage - https://www.alphavantage.co e copiar a chaave de api
+* Criar conta na RESEND - https://resend.com/ para poder testar a api de emails
+Após baixar o código na pasta raiz crie um arquivo json chamado local.settings.json e cole nele o seguinte código
+```bash
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+        "RESEND_API_KEY":"SUA_CHAVE_RESEND_APP",
+        "ALPHAVANTAGE_API_KEY":"SUA_CHAVE_APHAVANTAGE_AQUI"
+   }
+}
+```
+Este código deve ser colocado no seu arquivo e o valor das variáveis exige a criação de conta na ALPHAVANTAGE (API para coletar os dados da bolsa)e na RESEND(APi para reenvio de emails)
 ### Publicação ###
 partindo do pressuposto que ja existe os recursos e a appfunction na plataforma azure e que ja tem o azure CLI rodando
 ```bash
