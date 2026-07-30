@@ -49,7 +49,7 @@ namespace ALPHA_QUOTE
                 var close = latest.Value.GetProperty("4. close").GetString();
 
                  var html = BuildEmailHtml(stock, date, close = "");
-                 await SendMailAsync("michelgarciafurtado@gmail.com", $"Cotação {stock.name} - {date}", html, _logger);   
+                 await SendMailAsync("seuemailaqui@gmail.com", $"Cotação {stock.name} - {date}", html, _logger);   
                 // Retorna o conteúdo da Alpha Vantage em caso de sucesso
                 return new OkObjectResult(json);
             }
