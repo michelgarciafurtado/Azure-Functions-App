@@ -1,7 +1,11 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Azure.Functions.Worker;
+using ALPHA_QUOTE.Models;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace ALPHA_QUOTE
 {
@@ -23,30 +27,49 @@ namespace ALPHA_QUOTE
 
         [Function("DailyAlphaQuote")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "DailyAlphaQuote/{symbol}")] HttpRequest req, string symbol)
         {
             _logger.LogInformation($"C# Http trigger function executed at: {DateTime.Now}");
             
-            var petrobras = new { symbol = "PETR4.SA", name = "Petrobrás S.A." };
-            var url = $"{alphaUrl}?function={daily_function}&symbol={petrobras.symbol}&apikey={alphaApiKey}";
+           
+            var url = $"{alphaUrl}?function={daily_function}&symbol={symbol}&apikey={alphaApiKey}";
 
             try
             {
-                _logger.LogInformation($"Fetching data for {petrobras.name} from {url}");
+                _logger.LogInformation($"Fetching data for {symbol} from {url}");
                 
-                // Usando o HttpClient injetado corretamente com await
+                
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
                 var content = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation($"Response for {petrobras.name}: {content}");
+               
+                using JsonDocument doc = JsonDocument.Parse(content);
+                JsonElement root = doc.RootElement;
+                JsonElement timeSeries = root.GetProperty("Time Series (Daily)");
 
-                // Retorna o conteúdo da Alpha Vantage em caso de sucesso
-                return new OkObjectResult(content);
+                var ListValues = new List<StockValues>();
+
+
+                foreach (JsonProperty dia in timeSeries.EnumerateObject())
+                {
+                    string dataDoRegistro = dia.Name; 
+                    string precoFechamento = dia.Value.GetProperty("4. close").GetString()!;
+
+                    ListValues.Add(new
+                    StockValues(
+                        dataDoRegistro,
+                        precoFechamento
+                    ));
+                }
+
+                var historico = new Stock(symbol, ListValues);
+
+                return new OkObjectResult(historico);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to fetch data for {petrobras.name}: {ex.Message}");
+                _logger.LogError($"Failed to fetch data for {symbol}: {ex.Message}");
                 return new BadRequestObjectResult($"Erro ao buscar dados: {ex.Message}");
             }
         }
