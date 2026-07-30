@@ -19,6 +19,8 @@ namespace ALPHA_QUOTE
         private readonly string daily_function = "TIME_SERIES_DAILY";
 
         // O HttpClient e o ILogger agora são injetados automaticamente pelo .NET 8
+
+        //ResourceGroup: DefaultResourceGroup-CQ
         public DailyAlphaQuote(ILogger<DailyAlphaQuote> logger, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
